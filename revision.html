@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Revisión compartida · Moni & Tito</title>
 <style>
-:root{--bg:#f0f4ef;--panel:#fff;--ink:#3f4a42;--muted:#69746b;--line:#d5ddd3;--sage:#74816f;--soft:#eef3ec;--warn:#a87b2c}*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}.shell{display:grid;grid-template-columns:minmax(0,1fr) 360px;min-height:100vh}.preview{min-width:0}.preview iframe{width:100%;height:100vh;border:0;background:#fff}.side{height:100vh;overflow:auto;border-left:1px solid var(--line);background:#fbfcf9;padding:18px;position:sticky;top:0}.brand{font-family:Georgia,serif;font-size:24px;margin-bottom:3px}.sub{font-size:12px;color:var(--muted);margin-bottom:16px}.status{padding:10px 12px;border-radius:10px;background:var(--soft);font-size:12px;line-height:1.45;margin-bottom:14px}.status.ok{color:#2b6947}.status.warn{color:var(--warn)}.areas{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}.areas button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;cursor:pointer}.areas button.active{background:var(--sage);color:#fff;border-color:var(--sage)}label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:12px 0 7px}textarea{width:100%;min-height:180px;border:1px solid var(--line);border-radius:12px;padding:12px;resize:vertical;background:#fff;color:var(--ink)}.row{display:flex;gap:8px;margin-top:9px}.btn{border:0;border-radius:10px;padding:9px 12px;cursor:pointer;font-weight:600;background:var(--sage);color:#fff}.btn.alt{background:#ecefe8;color:var(--ink)}.history{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}.note{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0}.note b{font-size:12px}.note small{display:block;color:var(--muted);margin-top:3px}.note p{font-size:12px;line-height:1.45;white-space:pre-wrap;margin:7px 0 0}.login{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}@media(max-width:900px){.shell{display:block}.preview iframe{height:58vh}.side{height:auto;position:static;border-left:0;border-top:1px solid var(--line)}}
+:root{--bg:#f0f4ef;--ink:#3f4a42;--muted:#69746b;--line:#d5ddd3;--sage:#74816f;--soft:#eef3ec;--warn:#a87b2c;--ok:#2b6947}*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}.shell{display:grid;grid-template-columns:minmax(0,1fr) 390px;min-height:100vh}.preview{min-width:0}.preview iframe{width:100%;height:100vh;border:0;background:#fff}.side{height:100vh;overflow:auto;border-left:1px solid var(--line);background:#fbfcf9;padding:18px;position:sticky;top:0}.brand{font-family:Georgia,serif;font-size:24px;margin-bottom:3px}.sub{font-size:12px;color:var(--muted);margin-bottom:14px}.status{padding:10px 12px;border-radius:10px;background:var(--soft);font-size:12px;line-height:1.45;margin-bottom:12px}.status.ok{color:var(--ok)}.status.warn{color:var(--warn)}.login,.row{display:flex;gap:8px;flex-wrap:wrap}.login{margin-bottom:10px}.btn{border:0;border-radius:10px;padding:9px 12px;cursor:pointer;font-weight:600;background:var(--sage);color:#fff}.btn.alt{background:#ecefe8;color:var(--ink)}.btn.full{width:100%;justify-content:center}.areas{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.areas button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11px;cursor:pointer}.areas button.active{background:var(--sage);color:#fff;border-color:var(--sage)}label,.eyebrow{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:12px 0 7px}textarea{width:100%;min-height:140px;border:1px solid var(--line);border-radius:12px;padding:12px;resize:vertical;background:#fff;color:var(--ink)}.history,.section{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}.note,.flow{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0}.note b,.section b{font-size:13px}.note small{display:block;color:var(--muted);margin-top:3px}.note p{font-size:12px;line-height:1.45;white-space:pre-wrap;margin:7px 0 0}.flow ol{margin:8px 0 0 18px;padding:0}.flow li{font-size:12px;line-height:1.45;margin:5px 0}.tiny{font-size:11px;color:var(--muted);line-height:1.45}.live{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ok);margin-bottom:10px}.dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}@media(max-width:900px){.shell{display:block}.preview iframe{height:58vh}.side{height:auto;position:static;border-left:0;border-top:1px solid var(--line)}}
 </style>
 </head>
 <body>
@@ -13,15 +13,44 @@
   <main class="preview"><iframe id="panel" src="./index.html" title="Panel Moni y Tito"></iframe></main>
   <aside class="side">
     <div class="brand">Revisión compartida</div>
-    <div class="sub">Tito anota cambios · Vanne los ve online</div>
+    <div class="sub">Moni, Tito y Vanne trabajan sobre la misma revisión online.</div>
+    <div class="live"><span class="dot"></span>Notas sincronizadas en tiempo real con Firestore</div>
     <div class="login"><button class="btn" id="login">Entrar con Google</button><button class="btn alt" id="logout" style="display:none">Salir</button></div>
     <div class="status warn" id="state">Inicia sesión con Google para guardar y ver las notas compartidas.</div>
+
+    <div class="section">
+      <b>Flujo de trabajo</b>
+      <div class="flow"><ol>
+        <li>Moni o Tito abre esta misma URL desde su ordenador.</li>
+        <li>Entra con su propia cuenta de Google.</li>
+        <li>Revisa el panel o la invitación en la parte izquierda.</li>
+        <li>Selecciona el área y escribe qué quiere cambiar.</li>
+        <li>Pulsa <strong>Guardar cambio</strong>.</li>
+        <li>La nota aparece aquí para todos los usuarios conectados, sin enviar archivos.</li>
+      </ol></div>
+      <button class="btn full" id="showInvitation">Ver la invitación</button>
+      <p class="tiny" style="margin-top:7px">Así podéis ver la pantalla y las anotaciones a la vez: contenido a la izquierda, revisión compartida a la derecha.</p>
+    </div>
+
     <label>Área que estás revisando</label>
     <div class="areas" id="areas"></div>
     <label id="noteLabel">Nota para: Resumen</label>
     <textarea id="note" placeholder="Ejemplo: cambiar este texto, mover esta tarjeta, añadir una opción…"></textarea>
     <div class="row"><button class="btn" id="save">Guardar cambio</button><button class="btn alt" id="clear">Limpiar</button></div>
-    <div class="history"><b>Cambios solicitados</b><div id="history"><p style="font-size:12px;color:var(--muted)">Inicia sesión para ver el historial.</p></div></div>
+
+    <div class="history"><b>Cambios solicitados</b><div id="history"><p class="tiny">Inicia sesión para ver el historial.</p></div></div>
+
+    <div class="section">
+      <b>Cómo entra Moni o Tito desde su ordenador</b>
+      <div class="flow"><ol>
+        <li>Abrir Chrome, Safari o Edge.</li>
+        <li>Entrar en <strong>vmatson-studio.github.io/moni-tito-dashboard/revision.html</strong>.</li>
+        <li>Pulsar <strong>Entrar con Google</strong>.</li>
+        <li>Elegir su cuenta personal de Google.</li>
+        <li>Esperar a que aparezca “Conectado”.</li>
+        <li>Ya puede revisar, anotar y ver las notas de los demás en tiempo real.</li>
+      </ol></div>
+    </div>
   </aside>
 </div>
 <script type="module">
@@ -30,16 +59,18 @@ import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged} f
 import {getFirestore,collection,addDoc,onSnapshot,query,orderBy,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 const firebaseConfig={apiKey:'AIzaSyBsNVV4k-qWSPDWVseFonrhHekBJoALRvY',authDomain:'gen-lang-client-0727156619.firebaseapp.com',projectId:'gen-lang-client-0727156619',storageBucket:'gen-lang-client-0727156619.firebasestorage.app',messagingSenderId:'589633331931',appId:'1:589633331931:web:3b4d820bc977ded0fb62fe',measurementId:'G-Z0F5DM7MDQ'};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),provider=new GoogleAuthProvider();
-const AREAS=[['dashboard','Resumen'],['invitation','Mi invitación'],['edit','Contenido'],['guests','Invitados'],['rsvps','Respuestas'],['operations','Organización'],['guide','Guía'],['settings','Ajustes']];
+const AREAS=[['dashboard','Resumen'],['web','Mi invitación'],['edit','Contenido'],['guests','Invitados'],['rsvps','Respuestas'],['operations','Organización'],['guide','Guía'],['settings','Ajustes']];
 let user=null,current='dashboard',unsubscribe=null;
-const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function setArea(id,send=true){if(!AREAS.some(a=>a[0]===id))return;current=id;$('noteLabel').textContent='Nota para: '+AREAS.find(a=>a[0]===id)[1];document.querySelectorAll('#areas button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));if(send){try{$('panel').contentWindow.switchView(id)}catch(e){}}}
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function areaLabel(id){return (AREAS.find(a=>a[0]===id)||[id,id])[1]}
+function setArea(id,send=true){if(!AREAS.some(a=>a[0]===id))return;current=id;$('noteLabel').textContent='Nota para: '+areaLabel(id);document.querySelectorAll('#areas button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));if(send){try{$('panel').contentWindow.switchView(id)}catch(e){}}}
 AREAS.forEach(([id,label])=>{const b=document.createElement('button');b.textContent=label;b.dataset.id=id;b.onclick=()=>setArea(id);$('areas').appendChild(b)});setArea('dashboard',false);
-$('panel').addEventListener('load',()=>{try{const w=$('panel').contentWindow;if(typeof w.switchView==='function'){const orig=w.switchView.bind(w);w.switchView=function(name){orig(name);setArea(name,false)}}}catch(e){}});
+$('showInvitation').onclick=()=>setArea('web');
+$('panel').addEventListener('load',()=>{try{const w=$('panel').contentWindow;if(typeof w.switchView==='function'){const orig=w.switchView.bind(w);w.switchView=function(name){orig(name);if(AREAS.some(a=>a[0]===name))setArea(name,false)}}}catch(e){}});
 $('login').onclick=()=>signInWithPopup(auth,provider).catch(e=>alert('No se pudo iniciar sesión: '+e.message));$('logout').onclick=()=>signOut(auth);$('clear').onclick=()=>$('note').value='';
-$('save').onclick=async()=>{if(!user){alert('Primero entra con Google.');return}const text=$('note').value.trim();if(!text){alert('Escribe el cambio que quieres pedir.');return}try{await addDoc(collection(db,'review_note_history'),{area:current,areaLabel:AREAS.find(a=>a[0]===current)[1],text,authorUid:user.uid,authorName:user.displayName||'',authorEmail:user.email||'',status:'pendiente',createdAt:serverTimestamp()});$('note').value='';$('state').className='status ok';$('state').textContent='✓ Cambio guardado online. Vanne podrá verlo desde su ordenador.'}catch(e){$('state').className='status warn';$('state').textContent='Firebase no permitió guardar ('+(e.code||'error')+'). Hay que ajustar las reglas de Firestore.'}};
-function watch(){if(unsubscribe)unsubscribe();const q=query(collection(db,'review_note_history'),orderBy('createdAt','desc'));unsubscribe=onSnapshot(q,s=>{$('history').innerHTML=s.empty?'<p style="font-size:12px;color:var(--muted)">Todavía no hay cambios guardados.</p>':s.docs.slice(0,30).map(x=>{const d=x.data();return `<div class="note"><b>${esc(d.areaLabel||d.area||'Área')}</b><small>${esc(d.authorName||d.authorEmail||'Usuario')} · ${esc(d.status||'pendiente')}</small><p>${esc(d.text||'')}</p></div>`}).join('')},e=>{$('history').innerHTML='<p style="font-size:12px;color:var(--muted)">No se pudo cargar el historial: '+esc(e.code||'error')+'</p>'})}
-onAuthStateChanged(auth,u=>{user=u;$('login').style.display=u?'none':'';$('logout').style.display=u?'':'none';if(u){$('state').className='status ok';$('state').textContent='Conectado: '+(u.displayName||u.email);watch()}else{$('state').className='status warn';$('state').textContent='Inicia sesión con Google para guardar y ver las notas compartidas.';$('history').innerHTML='<p style="font-size:12px;color:var(--muted)">Inicia sesión para ver el historial.</p>';if(unsubscribe){unsubscribe();unsubscribe=null}}});
+$('save').onclick=async()=>{if(!user){alert('Primero entra con Google.');return}const text=$('note').value.trim();if(!text){alert('Escribe el cambio que quieres pedir.');return}try{await addDoc(collection(db,'review_note_history'),{area:current,areaLabel:areaLabel(current),text,authorUid:user.uid,authorName:user.displayName||'',authorEmail:user.email||'',status:'pendiente',createdAt:serverTimestamp()});$('note').value='';$('state').className='status ok';$('state').textContent='✓ Cambio guardado online y visible para los demás.'}catch(e){$('state').className='status warn';$('state').textContent='No se pudo guardar ('+(e.code||'error')+').'}};
+function watch(){if(unsubscribe)unsubscribe();const q=query(collection(db,'review_note_history'),orderBy('createdAt','desc'));unsubscribe=onSnapshot(q,s=>{$('history').innerHTML=s.empty?'<p class="tiny">Todavía no hay cambios guardados.</p>':s.docs.slice(0,40).map(x=>{const d=x.data();return `<div class="note"><b>${esc(d.areaLabel||d.area||'Área')}</b><small>${esc(d.authorName||d.authorEmail||'Usuario')} · ${esc(d.status||'pendiente')}</small><p>${esc(d.text||'')}</p></div>`}).join('')},e=>{$('history').innerHTML='<p class="tiny">No se pudo cargar el historial: '+esc(e.code||'error')+'</p>'})}
+onAuthStateChanged(auth,u=>{user=u;$('login').style.display=u?'none':'';$('logout').style.display=u?'':'none';if(u){$('state').className='status ok';$('state').textContent='Conectado: '+(u.displayName||u.email)+' · viendo datos compartidos';watch()}else{$('state').className='status warn';$('state').textContent='Inicia sesión con Google para guardar y ver las notas compartidas.';$('history').innerHTML='<p class="tiny">Inicia sesión para ver el historial.</p>';if(unsubscribe){unsubscribe();unsubscribe=null}}});
 </script>
 </body>
 </html>
