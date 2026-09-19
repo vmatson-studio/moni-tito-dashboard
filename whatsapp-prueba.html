@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prueba WhatsApp · Moni & Tito</title>
+<style>
+:root{--bg:#f0f4ef;--ink:#3f4a42;--muted:#69746b;--line:#d5ddd3;--sage:#74816f;--soft:#eef3ec}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}.wrap{max-width:760px;margin:40px auto;padding:20px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:20px}.title{font:32px Georgia,serif}.back,.btn{border:0;border-radius:10px;padding:10px 14px;text-decoration:none;font-weight:700;cursor:pointer}.back{background:var(--soft);color:var(--ink)}.btn{background:var(--sage);color:#fff;width:100%;font-size:16px}.field{margin:16px 0}label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:7px}input,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;color:var(--ink);background:#fff}textarea{min-height:150px;resize:vertical}.help{font-size:12px;color:var(--muted);line-height:1.5}.preview{background:var(--soft);border-radius:12px;padding:14px;margin:16px 0;font-size:13px;line-height:1.5}.ok{font-size:12px;color:#2b6947;margin-top:10px}
+</style>
+</head>
+<body><div class="wrap"><div class="top"><div class="title">Prueba WhatsApp</div><a class="back" href="./revision.html">← Volver</a></div><div class="card">
+<p class="help">Esta prueba usa WhatsApp normal. No envía nada automáticamente: prepara el mensaje y abre WhatsApp/WhatsApp Web para que tú pulses <b>Enviar</b>.</p>
+<div class="field"><label>Tu número de prueba</label><input id="phone" type="tel" placeholder="Ej. 34600123456"><div class="help">Pon el prefijo de país. Para España: 34 + número, sin espacios.</div></div>
+<div class="field"><label>Grupo familiar de prueba</label><input id="group" value="Familia de prueba"></div>
+<div class="field"><label>Mensaje</label><textarea id="msg">Hola, os enviamos la invitación de la boda de Moni & Tito. Podéis verla y confirmar vuestra asistencia aquí:</textarea></div>
+<div class="preview" id="preview"></div>
+<button class="btn" id="send">Abrir WhatsApp con la invitación</button><div class="ok">✓ Sirve para probar primero contigo antes de usar los teléfonos reales de los grupos familiares.</div>
+</div></div>
+<script>
+const invitation='https://vmatson-studio.github.io/moni-tito-dashboard/invitacion.html';
+const $=id=>document.getElementById(id);
+function build(){const group=$('group').value.trim()||'Familia';const link=invitation+'?grupo='+encodeURIComponent(group);const text=($('msg').value.trim()+'\n\n'+group+'\n'+link).trim();$('preview').textContent=text;return{text,link};}
+['group','msg'].forEach(id=>$(id).addEventListener('input',build));build();
+$('send').onclick=()=>{let p=$('phone').value.replace(/\D/g,'');if(!p){alert('Escribe primero el número de prueba con prefijo de país.');return}const {text}=build();window.open('https://wa.me/'+p+'?text='+encodeURIComponent(text),'_blank','noopener')};
+</script></body></html>
