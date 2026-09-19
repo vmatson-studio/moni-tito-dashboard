@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moni & Tito · Panel completo</title>
+<style>
+:root{--bg:#f0f4ef;--ink:#3f4a42;--muted:#69746b;--line:#d5ddd3;--sage:#74816f;--soft:#eef3ec}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+body{overflow:hidden}.globalbar{height:58px;background:#fbfcf9;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:9px 14px;position:relative;z-index:20}.back{width:38px;height:38px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);font-size:21px;cursor:pointer;display:grid;place-items:center;box-shadow:0 2px 7px rgba(0,0,0,.04)}.home{border:0;background:transparent;color:var(--muted);cursor:pointer;font-weight:700;padding:0}.home:hover{text-decoration:underline}.crumbs{display:flex;align-items:center;gap:7px;min-width:0;font-size:12px;white-space:nowrap;overflow:hidden}.sep{opacity:.45}.current{font-weight:800;color:var(--ink);overflow:hidden;text-overflow:ellipsis}.right{margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap}.frame{width:100%;height:calc(100vh - 58px);border:0;background:#fff;display:block}@media(max-width:700px){.right{display:none}.globalbar{padding:8px}.crumbs{font-size:11px}}
+</style>
+</head>
+<body>
+<header class="globalbar">
+  <button class="back" id="back" title="Volver" aria-label="Volver">←</button>
+  <div class="crumbs" id="crumbs"><button class="home" id="home">Inicio</button><span class="sep">/</span><span class="current">Revisión compartida</span></div>
+  <div class="right">Navegación global · Moni & Tito</div>
+</header>
+<iframe class="frame" id="appFrame" src="./revision.html?v=8" title="Panel Moni y Tito"></iframe>
+<script>
+const frame=document.getElementById('appFrame'),crumbs=document.getElementById('crumbs'),home=document.getElementById('home');
+const names={
+ 'revision.html':'Revisión compartida','index.html':'Panel / gestión','gestion.html':'Gestión detallada','invitados.html':'Invitados','invitacion.html':'Invitación de Moni','inicio.html':'Inicio'
+};
+const viewNames={dashboard:'Resumen',flow:'Flujo',guests:'Familias',menu:'Menú',allergies:'Alergias',transport:'Transporte',kids:'Niños',music:'Música',gifts:'Regalos',tables:'Tablas y listas',charts:'Gráficas',settings:'Ajustes'};
+function fileName(url){try{return new URL(url,location.href).pathname.split('/').pop()||'revision.html'}catch(e){return 'revision.html'}}
+function renderCrumbs(parts){crumbs.innerHTML='';const h=document.createElement('button');h.className='home';h.textContent='Inicio';h.onclick=goHome;crumbs.appendChild(h);for(const p of parts){const s=document.createElement('span');s.className='sep';s.textContent='/';crumbs.appendChild(s);const x=document.createElement('span');x.className='current';x.textContent=p;crumbs.appendChild(x)}}
+function goHome(){frame.src='./revision.html?v=8'}
+home.onclick=goHome;
+function sync(){
+ let outer='revision.html',parts=[];
+ try{outer=fileName(frame.contentWindow.location.href)}catch(e){outer=fileName(frame.src)}
+ parts.push(names[outer]||outer.replace('.html',''));
+ if(outer==='revision.html'){
+   try{
+     const inner=frame.contentDocument.getElementById('panel');
+     if(inner){
+       const u=new URL(inner.contentWindow.location.href,location.href),f=fileName(u.href);
+       if(f==='gestion.html'){
+         const v=u.searchParams.get('view')||'dashboard';parts.push('Gestión detallada');if(viewNames[v])parts.push(viewNames[v]);
+       }else if(f==='index.html'){
+         parts.push('Panel / gestión');
+         const active=inner.contentDocument.querySelector('.nav-item.active,[aria-current="page"]');
+         const txt=active&&active.textContent?active.textContent.trim():'';if(txt&&txt!=='Resumen')parts.push(txt);
+       }
+       inner.addEventListener('load',()=>setTimeout(sync,80),{once:true});
+     }
+   }catch(e){}
+ }
+ renderCrumbs(parts);
+ try{
+   const doc=frame.contentDocument;
+   doc.addEventListener('click',e=>{
+     const a=e.target.closest('a[href]');if(!a)return;const raw=a.getAttribute('href');if(!raw||raw.startsWith('#')||raw.startsWith('http')&&!raw.includes(location.host))return;
+     const u=new URL(raw,frame.contentWindow.location.href);if(u.origin===location.origin&&u.pathname.includes('/moni-tito-dashboard/')){e.preventDefault();frame.src=u.href}
+   },{capture:true,once:true});
+ }catch(e){}
+}
+frame.addEventListener('load',()=>setTimeout(sync,100));
+document.getElementById('back').onclick=()=>{
+ try{
+   const outer=fileName(frame.contentWindow.location.href);
+   if(outer!=='revision.html'){frame.src='./revision.html?v=8';return}
+   const inner=frame.contentDocument.getElementById('panel');
+   if(inner){const f=fileName(inner.contentWindow.location.href);if(f==='gestion.html'){inner.src='./index.html';setTimeout(sync,100);return}}
+ }catch(e){}
+ history.back();
+};
+</script>
+</body>
+</html>
