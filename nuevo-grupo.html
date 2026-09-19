@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nuevo grupo · Moni & Tito</title>
+<style>
+:root{--bg:#f0f4ef;--panel:#fff;--ink:#3f4a42;--muted:#69746b;--line:#d5ddd3;--sage:#74816f;--soft:#eef3ec;--ok:#2b6947;--warn:#a87b2c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}.wrap{max-width:900px;margin:auto;padding:28px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.title{font-family:Georgia,serif;font-size:30px}.sub{font-size:12px;color:var(--muted)}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px}input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}.btn{border:0;border-radius:10px;padding:10px 14px;background:var(--sage);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.btn.alt{background:#e8ece5;color:var(--ink)}.row{display:flex;gap:8px;flex-wrap:wrap}.status{padding:10px 12px;border-radius:10px;background:var(--soft);font-size:12px;line-height:1.45;margin:10px 0}.ok{color:var(--ok)}.warn{color:var(--warn)}.member{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}</style>
+</head>
+<body><div class="wrap">
+<div class="top"><div><div class="title">Nuevo grupo familiar</div><div class="sub">Alta manual segura para pruebas y primeros invitados</div></div><a class="btn alt" href="./revision.html?v=10">← Volver</a></div>
+<div class="card"><div id="authState" class="status warn">Entra con Google para crear el grupo.</div><div class="row"><button id="login" class="btn">Entrar con Google</button><button id="logout" class="btn alt" style="display:none">Salir</button></div></div>
+<div class="card">
+<div class="grid">
+<div><label>Nombre del grupo</label><input id="groupName" placeholder="Ej. Familia Pérez"></div>
+<div><label>Teléfono principal</label><input id="phone" placeholder="Ej. 34600111222"></div>
+<div><label>Contacto principal</label><input id="primaryName" placeholder="Nombre"></div>
+<div><label>Tipo</label><select id="primaryType"><option>Adulto</option><option>Niño</option></select></div>
+<div><label>Segundo miembro</label><input id="member2" placeholder="Nombre"></div>
+<div><label>Tipo</label><select id="member2Type"><option>Adulto</option><option>Niño</option></select></div>
+<div><label>Tercer miembro</label><input id="member3" placeholder="Nombre"></div>
+<div><label>Tipo</label><select id="member3Type"><option>Niño</option><option>Adulto</option></select></div>
+<div class="full"><div class="status">Los datos se guardan en Firestore. No se escriben en el repositorio público.</div></div>
+</div>
+<div class="row"><button id="save" class="btn" disabled>Crear grupo de prueba</button></div>
+<div id="result" class="status" style="display:none"></div>
+</div>
+</div>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+import {getFirestore,doc,setDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+const firebaseConfig={apiKey:'AIzaSyBsNVV4k-qWSPDWVseFonrhHekBJoALRvY',authDomain:'gen-lang-client-0727156619.firebaseapp.com',projectId:'gen-lang-client-0727156619',storageBucket:'gen-lang-client-0727156619.firebasestorage.app',messagingSenderId:'589633331931',appId:'1:589633331931:web:3b4d820bc977ded0fb62fe'};
+const ALLOWED=['vmatsonc@gmail.com','albertoahp@gmail.com','alfreda202325@gmail.com'];
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),provider=new GoogleAuthProvider();
+let user=null;const $=id=>document.getElementById(id);const slug=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'grupo';
+$('login').onclick=()=>signInWithPopup(auth,provider);$('logout').onclick=()=>signOut(auth);
+onAuthStateChanged(auth,u=>{user=u;if(u&&!ALLOWED.includes((u.email||'').toLowerCase())){signOut(auth);$('authState').className='status warn';$('authState').textContent='Acceso no autorizado.';return}$('login').style.display=u?'none':'';$('logout').style.display=u?'':'none';$('save').disabled=!u;$('authState').className='status '+(u?'ok':'warn');$('authState').textContent=u?'Conectado: '+(u.displayName||u.email):'Entra con Google para crear el grupo.'});
+$('save').onclick=async()=>{if(!user)return;const groupName=$('groupName').value.trim();const phone=$('phone').value.replace(/\D/g,'');const people=[[$('primaryName').value.trim(),$('primaryType').value,true],[$('member2').value.trim(),$('member2Type').value,false],[$('member3').value.trim(),$('member3Type').value,false]].filter(x=>x[0]);if(!groupName||!phone||!people.length){$('result').style.display='block';$('result').className='status warn';$('result').textContent='Falta nombre del grupo, teléfono o al menos una persona.';return}const gid='group_'+slug(groupName)+'_'+Date.now();$('save').disabled=true;try{for(const [name,type,primary] of people){const id='guest_'+gid+'_'+slug(name);await setDoc(doc(db,'guests',id),{id,groupId:gid,groupName,name,personType:type,phone:primary?phone:'',primaryContact:primary?'Sí':'No',attendance:'',menuType:'',starter:'',mainCourse:'',dessert:'',allergies:'',transport:'',transportOut:'',transportBack:'',song:'',message:'',source:'manual-test',createdByUid:user.uid,createdByEmail:user.email,updatedAt:serverTimestamp()})}$('result').style.display='block';$('result').className='status ok';$('result').innerHTML='✓ Grupo creado: <b>'+groupName+'</b> · '+people.length+' personas. Siguiente paso: generar el formulario de prueba para este grupo.';}catch(e){$('result').style.display='block';$('result').className='status warn';$('result').textContent='No se pudo guardar: '+(e.code||e.message)}finally{$('save').disabled=false}}
+</script></body></html>
