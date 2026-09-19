@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invitados · Moni & Tito</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f0f4ef;--panel:#fff;--ink:#3f4a42;--muted:#69746b;--line:#d5ddd3;--sage:#74816f;--soft:#eef3ec;--ok:#2b6947;--warn:#a87b2c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}.wrap{max-width:1180px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.title{font-family:Georgia,serif;font-size:30px}.sub{font-size:12px;color:var(--muted)}.btn{border:0;border-radius:10px;padding:10px 14px;background:var(--sage);color:#fff;font-weight:700;cursor:pointer}.btn.alt{background:#e8ece5;color:var(--ink)}.grid{display:grid;grid-template-columns:360px 1fr;gap:18px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.drop{border:1px dashed var(--sage);border-radius:14px;padding:18px;text-align:center;background:#fafcf8}.drop input{display:none}.status{margin:12px 0;padding:10px;border-radius:10px;background:var(--soft);font-size:12px}.status.ok{color:var(--ok)}.status.warn{color:var(--warn)}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.scroll{overflow:auto;max-height:68vh}.pill{display:inline-block;padding:3px 8px;border-radius:999px;background:var(--soft);font-size:10px}.wa{background:#e9f5ec;color:#215e36;padding:6px 9px;border-radius:8px;text-decoration:none;font-weight:700;white-space:nowrap}.small{font-size:11px;color:var(--muted);line-height:1.5}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}@media(max-width:850px){.grid{grid-template-columns:1fr}.wrap{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><div class="title">Invitados · Moni & Tito</div><div class="sub">Importa Excel/CSV, comparte la lista y abre WhatsApp por invitado</div></div><a class="btn alt" href="./revision.html">← Volver a revisión</a></div>
+  <div class="grid">
+    <section class="card">
+      <h3>Importar lista</h3>
+      <p class="small">Acepta .xlsx, .xls y .csv. Reconoce columnas habituales: nombre, teléfono, email, acompañante, niños, alergias, menú y transporte.</p>
+      <div class="drop"><input id="file" type="file" accept=".xlsx,.xls,.csv"><button class="btn" id="pick">Seleccionar Excel o CSV</button><div class="small" id="fileName" style="margin-top:8px">Ningún archivo seleccionado</div></div>
+      <div class="status warn" id="state">Entra con Google para guardar la lista compartida.</div>
+      <div class="actions"><button class="btn" id="login">Entrar con Google</button><button class="btn alt" id="logout" style="display:none">Salir</button></div>
+      <div class="actions"><button class="btn" id="save" disabled>Guardar lista online</button><button class="btn alt" id="clear">Limpiar vista previa</button></div>
+      <p class="small" style="margin-top:12px"><b>WhatsApp:</b> no envía automáticamente. Abre WhatsApp con el teléfono del invitado y un mensaje preparado, para que vosotros decidáis cuándo enviarlo.</p>
+    </section>
+    <section class="card">
+      <h3>Lista compartida</h3>
+      <div class="small" id="count">0 invitados</div>
+      <div class="scroll"><table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Alergias / menú</th><th>Transporte</th><th>WhatsApp</th></tr></thead><tbody id="rows"></tbody></table></div>
+    </section>
+  </div>
+</div>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+import {getFirestore,collection,doc,setDoc,onSnapshot,query,orderBy,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+const firebaseConfig={apiKey:'AIzaSyBsNVV4k-qWSPDWVseFonrhHekBJoALRvY',authDomain:'gen-lang-client-0727156619.firebaseapp.com',projectId:'gen-lang-client-0727156619',storageBucket:'gen-lang-client-0727156619.firebasestorage.app',messagingSenderId:'589633331931',appId:'1:589633331931:web:3b4d820bc977ded0fb62fe'};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),provider=new GoogleAuthProvider();
+let user=null,preview=[],unsub=null; const $=id=>document.getElementById(id); const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+function get(row,names){for(const k of Object.keys(row)){const nk=norm(k);if(names.some(n=>nk===n||nk.includes(n)))return row[k]??''}return ''}
+function mapRow(r,i){const name=get(r,['nombre','name','invitado','guest']);const phone=String(get(r,['telefono','teléfono','phone','movil','móvil','whatsapp'])).replace(/[^\d+]/g,'');return {id:'guest_'+Date.now()+'_'+i,name:String(name||'').trim(),phone,email:String(get(r,['email','correo','mail'])).trim(),companion:String(get(r,['acompanante','acompañante','companion'])).trim(),children:String(get(r,['ninos','niños','children'])).trim(),allergies:String(get(r,['alergia','alergias','allergy'])).trim(),menu:String(get(r,['menu','menú','dieta','diet'])).trim(),transport:String(get(r,['transporte','transport','bus'])).trim()}}
+function waLink(g){let p=String(g.phone||'').replace(/\D/g,'');if(!p)return '';const msg=`Hola ${g.name||''}, te escribimos sobre la boda de Moni & Tito. Queríamos confirmar contigo algunos detalles de la invitación.`;return `https://wa.me/${p}?text=${encodeURIComponent(msg)}`}
+function render(list){$('count').textContent=`${list.length} invitados`;$('rows').innerHTML=list.map(g=>`<tr><td><b>${esc(g.name)}</b>${g.companion?`<div class="small">Acomp.: ${esc(g.companion)}</div>`:''}</td><td>${esc(g.phone)}</td><td>${esc(g.email)}</td><td>${esc([g.allergies,g.menu].filter(Boolean).join(' · '))}</td><td>${esc(g.transport)}</td><td>${g.phone?`<a class="wa" target="_blank" rel="noopener" href="${waLink(g)}">WhatsApp</a>`:'—'}</td></tr>`).join('')}
+$('pick').onclick=()=>$('file').click();$('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;$('fileName').textContent=f.name;const data=await f.arrayBuffer();const wb=XLSX.read(data,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],raw=XLSX.utils.sheet_to_json(ws,{defval:''});preview=raw.map(mapRow).filter(g=>g.name||g.phone||g.email);render(preview);$('save').disabled=!user||!preview.length;$('state').className='status ok';$('state').textContent=`Vista previa: ${preview.length} filas detectadas. Revisa antes de guardar.`};
+$('clear').onclick=()=>{preview=[];render([]);$('file').value='';$('fileName').textContent='Ningún archivo seleccionado';$('save').disabled=true};
+$('login').onclick=()=>signInWithPopup(auth,provider).catch(e=>alert(e.message));$('logout').onclick=()=>signOut(auth);
+$('save').onclick=async()=>{if(!user||!preview.length)return;$('save').disabled=true;try{for(const g of preview){await setDoc(doc(db,'guests',g.id),{...g,source:'excel-csv',importedByUid:user.uid,importedByName:user.displayName||'',updatedAt:serverTimestamp()})}$('state').className='status ok';$('state').textContent=`✓ ${preview.length} invitados guardados online.`;preview=[];$('file').value='';$('fileName').textContent='Ningún archivo seleccionado'}catch(e){$('state').className='status warn';$('state').textContent='No se pudo guardar ('+(e.code||'error')+'). Hay que autorizar la colección guests en Firestore.'}finally{$('save').disabled=!user||!preview.length}};
+function watch(){if(unsub)unsub();unsub=onSnapshot(query(collection(db,'guests'),orderBy('updatedAt','desc')),s=>render(s.docs.map(d=>d.data())),e=>{$('state').className='status warn';$('state').textContent='No se pudo leer invitados ('+(e.code||'error')+').'})}
+onAuthStateChanged(auth,u=>{user=u;$('login').style.display=u?'none':'';$('logout').style.display=u?'':'none';$('save').disabled=!u||!preview.length;if(u){$('state').className='status ok';$('state').textContent='Conectado: '+(u.displayName||u.email)+' · lista compartida activa';watch()}else{if(unsub){unsub();unsub=null}$('state').className='status warn';$('state').textContent='Entra con Google para guardar la lista compartida.'}})
+</script>
+</body></html>
